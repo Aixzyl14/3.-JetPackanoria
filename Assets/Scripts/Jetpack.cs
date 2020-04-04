@@ -69,11 +69,10 @@ public class Jetpack : MonoBehaviour
             case "Friendly":
                 print("friendly");
                 break;
-            case "Fuel":
-               
+            case "Destructive":
+                Destroy(gameObject);
                 break;
             default:
-                Destroy(gameObject);
                 break;
                 
         }
