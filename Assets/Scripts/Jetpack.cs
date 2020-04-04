@@ -53,4 +53,21 @@ public class Jetpack : MonoBehaviour
         rb.freezeRotation = false; // resume physics control of rotation
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        switch(collision.gameObject.tag)
+        {
+            case "Friendly":
+                print("friendly");
+                break;
+            case "Fuel":
+               
+                break;
+            default:
+                Destroy(gameObject);
+                break;
+                
+        }
+    }
+
 }
