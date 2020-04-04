@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class Jetpack : MonoBehaviour
 {
+    public float JetSpeed = 20f;
     AudioSource audio;
     Rigidbody rb;
     [SerializeField] float RcsThrust = 200f; // average thrust rotation of jetpack also serialize makes it so its editable in inspector but not allowed to be edited by other scripts
-    public float thrustSpeed = 1000f; // average thrust speed of jerpack
 
     private void Start()
     {
@@ -18,15 +18,24 @@ public class Jetpack : MonoBehaviour
     void Update()
     {
         Thrust();
-        Rotation();    
+        Rotation();
+        if (((gameObject.transform.eulerAngles.z >= 130) && (gameObject.transform.eulerAngles.z <= 180)) || ((gameObject.transform.eulerAngles.z <= -130) && (gameObject.transform.eulerAngles.z >= -180)))
+        {
+            JetSpeed = -20f;
+        }
+        else
+        {
+            JetSpeed = 20f;
+        }
+
     }
 
 
     private void Thrust()
     {
-        float JetSpeed = Time.deltaTime * thrustSpeed;
         if (Input.GetKey(KeyCode.Space))
         {
+
             rb.AddRelativeForce(Vector3.up * JetSpeed);
             if (!audio.isPlaying)
             {
