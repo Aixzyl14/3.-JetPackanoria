@@ -3,10 +3,11 @@ using UnityEngine.SceneManagement;
 
 public class Jetpack : MonoBehaviour
 {
-    public float JetSpeed = 20f;
+    public float JetSpeed;
     AudioSource audio;
     Rigidbody rb;
     [SerializeField] float RcsThrust = 200f; // average thrust rotation of jetpack also serialize makes it so its editable in inspector but not allowed to be edited by other scripts
+    [SerializeField] float levelLoadDelay = 2f;
 
     [SerializeField] AudioClip MainEngine;
     [SerializeField] AudioClip Death;
@@ -35,7 +36,8 @@ public class Jetpack : MonoBehaviour
 
     private void RespondToThrustInput()
     {
-        BackWardsThrust();
+            JetSpeed = 1200f;
+           BackWardsThrust();
         if (Input.GetKey(KeyCode.Space))
         {
             Thrusting();
@@ -49,7 +51,7 @@ public class Jetpack : MonoBehaviour
 
     private void Thrusting()
     {
-        rb.AddRelativeForce(Vector3.up * JetSpeed);
+        rb.AddRelativeForce(Vector3.up * (JetSpeed * Time.deltaTime));
         if (!audio.isPlaying)
         {
             audio.PlayOneShot(MainEngine);
@@ -61,12 +63,9 @@ public class Jetpack : MonoBehaviour
     {
         if (((gameObject.transform.eulerAngles.z >= 130) && (gameObject.transform.eulerAngles.z <= 180)) || ((gameObject.transform.eulerAngles.z <= -130) && (gameObject.transform.eulerAngles.z >= -180)))
         {
-            JetSpeed = -20f;
+            JetSpeed = -1200f;
         }
-        else
-        {
-            JetSpeed = 20f;
-        }
+
     }
 
     private void RespondToRotationInpout()
@@ -110,7 +109,7 @@ public class Jetpack : MonoBehaviour
         state = State.Dying;
         audio.PlayOneShot(Death);
         explosionPart.Play();
-        Invoke("RestartFirstLevel", 2f);
+        Invoke("RestartFirstLevel", levelLoadDelay);
     }
 
     private void LevelComplete()
@@ -119,7 +118,7 @@ public class Jetpack : MonoBehaviour
         state = State.Transcending;
         audio.PlayOneShot(NewLevel);
         successPart.Play();
-        Invoke("LoadNextLevel", 1f); // invoke the subroutine after 1f = 1second wait
+        Invoke("LoadNextLevel", levelLoadDelay); // invoke the subroutine after 1f = 1second wait
     }
 
     void RestartFirstLevel()
