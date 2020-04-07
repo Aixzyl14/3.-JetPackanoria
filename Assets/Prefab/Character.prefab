@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 1127423634}
   - component: {fileID: 1127423635}
   m_Layer: 0
-  m_Name: Spot Light
+  m_Name: Front Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -261,7 +261,7 @@ GameObject:
   - component: {fileID: 1261966241}
   - component: {fileID: 1261966242}
   m_Layer: 0
-  m_Name: Spot Light (1)
+  m_Name: Body Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1188,7 +1188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   JetSpeed: 1000
-  RcsThrust: 300
+  RcsThrust: 400
   levelLoadDelay: 2
   MainEngine: {fileID: 8300000, guid: 2132037408d369440bf0a0487f44f7d8, type: 3}
   Death: {fileID: 8300000, guid: da621933c82eb244ea1e2a1ed7697a8e, type: 3}

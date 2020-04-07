@@ -91,13 +91,11 @@ public class Jetpack : MonoBehaviour
         {
             case "Friendly":
                 break;
-            case "Destructive":
-                DeathSequence();
-                break;
             case "Finish":
                 LevelComplete();
                 break;
             default:
+                DeathSequence();
                 break;
                 
         }
