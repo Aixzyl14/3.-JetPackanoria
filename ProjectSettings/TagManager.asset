@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Friendly
   - Destructive
+  - CheatPoint
   layers:
   - Default
   - TransparentFX

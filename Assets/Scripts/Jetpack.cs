@@ -16,8 +16,11 @@ public class Jetpack : MonoBehaviour
     [SerializeField] ParticleSystem mainEnginePart;
     [SerializeField] ParticleSystem successPart;
     [SerializeField] ParticleSystem explosionPart;
-    enum State { Alive, Dying, Transcending}
+    [SerializeField] ParticleSystem CheatPart;
+    enum State { Alive, Dying, Transcending }
     State state = State.Alive;
+    bool CollisionDisabled = false;
+    bool Cheat = false;
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -29,15 +32,30 @@ public class Jetpack : MonoBehaviour
         {
             RespondToThrustInput();
             RespondToRotationInpout();
-         
+          
+        }
+        if (Debug.isDebugBuild) // only works for development build and untick it when giving to player after
+        {
+            RespondToDebugInputs(); 
         }
     }
 
+    void RespondToDebugInputs()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLevel();
+        }
+        else if (Input.GetKey(KeyCode.C))
+        {
+            CollisionDisabled = !CollisionDisabled;
+        }
+    }
 
     private void RespondToThrustInput()
     {
-            JetSpeed = 1200f;
-           BackWardsThrust();
+        JetSpeed = 1200f;
+        BackWardsThrust();
         if (Input.GetKey(KeyCode.Space))
         {
             Thrusting();
@@ -85,19 +103,23 @@ public class Jetpack : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(state != State.Alive)  {return;} // ignore collision if players dead
+        if ((state != State.Alive) || (CollisionDisabled)) { return; } // ignore collision if players dead
 
-        switch(collision.gameObject.tag)
+
+        switch (collision.gameObject.tag)
         {
             case "Friendly":
                 break;
             case "Finish":
                 LevelComplete();
                 break;
+            case "CheatPoint":
+                CheatPointSeq();
+                break;
             default:
                 DeathSequence();
                 break;
-                
+
         }
     }
 
@@ -119,6 +141,16 @@ public class Jetpack : MonoBehaviour
         Invoke("LoadNextLevel", levelLoadDelay); // invoke the subroutine after 1f = 1second wait
     }
 
+    void CheatPointSeq()
+    {
+        Cheat = true;
+        audio.Stop();
+        state = State.Transcending;
+        audio.PlayOneShot(NewLevel);
+        CheatPart.Play();
+        Invoke("LoadCheatLevel", levelLoadDelay);
+    }
+
     void RestartFirstLevel()
     {
         SceneManager.LoadScene(0);
@@ -126,6 +158,26 @@ public class Jetpack : MonoBehaviour
 
     void LoadNextLevel()
     {
-        SceneManager.LoadScene(1);
+        int nextSceneIndex = 0;
+        int currentScene = SceneManager.GetActiveScene().buildIndex;
+        if (Cheat)
+        {
+                nextSceneIndex = currentScene + 2;
+        }
+        else
+        {
+            nextSceneIndex = currentScene + 1;
+        }
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex = 0;
+        } 
+            SceneManager.LoadScene(nextSceneIndex);
+        Cheat = false;
+    }
+
+    void LoadCheatLevel()
+    {
+        SceneManager.LoadScene(2);
     }
 }
