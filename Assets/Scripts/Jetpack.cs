@@ -88,9 +88,22 @@ public class Jetpack : MonoBehaviour
 
     private void RespondToRotationInpout()
     {
+        int currentScene = SceneManager.GetActiveScene().buildIndex;
         rb.freezeRotation = true; // take manual control of rotation
         float rotationSpeed = Time.deltaTime * RcsThrust; // rotation per frame
-        if (Input.GetKey(KeyCode.A))
+        if (currentScene == 7)
+        {
+            if (Input.GetKey(KeyCode.W))
+            {
+                transform.Rotate(Vector3.right * rotationSpeed);
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                transform.Rotate(Vector3.left * rotationSpeed);
+            }
+        }
+        else { }
+         if (Input.GetKey(KeyCode.A))
         {
             transform.Rotate(Vector3.forward * rotationSpeed);
         }
@@ -112,6 +125,9 @@ public class Jetpack : MonoBehaviour
                 break;
             case "Finish":
                 LevelComplete();
+                break;
+            case "Safe":
+
                 break;
             case "CheatPoint":
                 CheatPointSeq();
@@ -148,12 +164,13 @@ public class Jetpack : MonoBehaviour
         state = State.Transcending;
         audio.PlayOneShot(NewLevel);
         CheatPart.Play();
-        Invoke("LoadCheatLevel", levelLoadDelay);
+        Invoke("LoadNextLevel", levelLoadDelay);
     }
 
     void RestartFirstLevel()
     {
-        SceneManager.LoadScene(0);
+        int currentScene = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentScene);
     }
 
     void LoadNextLevel()
@@ -163,6 +180,8 @@ public class Jetpack : MonoBehaviour
         if (Cheat)
         {
                 nextSceneIndex = currentScene + 2;
+                LoadCheatLevel(nextSceneIndex);
+                return;
         }
         else
         {
@@ -173,11 +192,17 @@ public class Jetpack : MonoBehaviour
             nextSceneIndex = 0;
         } 
             SceneManager.LoadScene(nextSceneIndex);
-        Cheat = false;
     }
 
-    void LoadCheatLevel()
+    void LoadCheatLevel(int nextSceneIndex)
     {
-        SceneManager.LoadScene(2);
+        if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex = SceneManager.sceneCountInBuildSettings - 1;
+
+        }
+        else { }
+        SceneManager.LoadScene(nextSceneIndex);
+        Cheat = false;
     }
 }
