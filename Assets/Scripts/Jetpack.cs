@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Jetpack : MonoBehaviour
@@ -79,7 +80,8 @@ public class Jetpack : MonoBehaviour
 
     private void BackWardsThrust()
     {
-        if (((gameObject.transform.eulerAngles.z >= 130) && (gameObject.transform.eulerAngles.z <= 180)) || ((gameObject.transform.eulerAngles.z <= -130) && (gameObject.transform.eulerAngles.z >= -180)))
+        int currentScene = SceneManager.GetActiveScene().buildIndex;
+        if ((((gameObject.transform.eulerAngles.z >= 130) && (gameObject.transform.eulerAngles.z <= 180)) || ((gameObject.transform.eulerAngles.z <= -130) && (gameObject.transform.eulerAngles.z >= -180))) && !(currentScene >= 6))
         {
             JetSpeed = -1200f;
         }
@@ -91,15 +93,15 @@ public class Jetpack : MonoBehaviour
         int currentScene = SceneManager.GetActiveScene().buildIndex;
         rb.freezeRotation = true; // take manual control of rotation
         float rotationSpeed = Time.deltaTime * RcsThrust; // rotation per frame
-        if (currentScene == 7)
+        if (currentScene >= 6)
         {
             if (Input.GetKey(KeyCode.W))
             {
-                transform.Rotate(Vector3.right * rotationSpeed);
+                transform.Rotate(Vector3.left * rotationSpeed);
             }
             if (Input.GetKey(KeyCode.S))
             {
-                transform.Rotate(Vector3.left * rotationSpeed);
+                transform.Rotate(Vector3.right * rotationSpeed);
             }
         }
         else { }
@@ -129,6 +131,9 @@ public class Jetpack : MonoBehaviour
             case "Safe":
 
                 break;
+            case "Boss":
+                BossDead();
+                break;
             case "CheatPoint":
                 CheatPointSeq();
                 break;
@@ -137,6 +142,13 @@ public class Jetpack : MonoBehaviour
                 break;
 
         }
+    }
+
+    private void BossDead()
+    {
+        audio.Stop();
+        audio.PlayOneShot(Death);
+        explosionPart.Play();
     }
 
     private void DeathSequence()

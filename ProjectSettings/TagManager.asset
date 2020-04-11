@@ -8,6 +8,7 @@ TagManager:
   - Destructive
   - CheatPoint
   - Safe
+  - Boss
   layers:
   - Default
   - TransparentFX
