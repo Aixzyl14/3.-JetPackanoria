@@ -18,6 +18,7 @@ public class Jetpack : MonoBehaviour
     [SerializeField] ParticleSystem successPart;
     [SerializeField] ParticleSystem explosionPart;
     [SerializeField] ParticleSystem CheatPart;
+    [SerializeField] ParticleSystem BossdeathPart;
     enum State { Alive, Dying, Transcending }
     State state = State.Alive;
     bool CollisionDisabled = false;
@@ -103,15 +104,26 @@ public class Jetpack : MonoBehaviour
             {
                 transform.Rotate(Vector3.right * rotationSpeed);
             }
+            if (Input.GetKey(KeyCode.A))
+            {
+                transform.Rotate(-Vector3.forward * rotationSpeed);
+            }
+            else if (Input.GetKey(KeyCode.D))
+            {
+                transform.Rotate(Vector3.forward * rotationSpeed);
+            }
+         
         }
-        else { }
-         if (Input.GetKey(KeyCode.A))
+        else
         {
-            transform.Rotate(Vector3.forward * rotationSpeed);
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            transform.Rotate(-Vector3.forward * rotationSpeed);
+            if (Input.GetKey(KeyCode.A))
+            {
+                transform.Rotate(Vector3.forward * rotationSpeed);
+            }
+            else if (Input.GetKey(KeyCode.D))
+            {
+                transform.Rotate(-Vector3.forward * rotationSpeed);
+            }
         }
         rb.freezeRotation = false; // resume physics control of rotation
     }
@@ -131,11 +143,11 @@ public class Jetpack : MonoBehaviour
             case "Safe":
 
                 break;
-            case "Boss":
-                BossDead();
-                break;
             case "CheatPoint":
                 CheatPointSeq();
+                break;
+            case "Boss":
+                BossDead();
                 break;
             default:
                 DeathSequence();
@@ -144,11 +156,12 @@ public class Jetpack : MonoBehaviour
         }
     }
 
-    private void BossDead()
+    void BossDead()
     {
-        audio.Stop();
-        audio.PlayOneShot(Death);
-        explosionPart.Play();
+            audio.Stop();
+            audio.PlayOneShot(Death);
+            BossdeathPart.Play();
+        LevelComplete();
     }
 
     private void DeathSequence()
@@ -157,7 +170,7 @@ public class Jetpack : MonoBehaviour
         state = State.Dying;
         audio.PlayOneShot(Death);
         explosionPart.Play();
-        Invoke("RestartFirstLevel", levelLoadDelay);
+        Invoke("RestartSameLevel", levelLoadDelay);
     }
 
     private void LevelComplete()
@@ -179,7 +192,7 @@ public class Jetpack : MonoBehaviour
         Invoke("LoadNextLevel", levelLoadDelay);
     }
 
-    void RestartFirstLevel()
+    void RestartSameLevel()
     {
         int currentScene = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(currentScene);

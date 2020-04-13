@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class BossMovements : MonoBehaviour
 {
+    int boost = 0;
     float JetSpeed;
     bool BossIsAlive = true;
     Rigidbody rb;
@@ -12,21 +13,49 @@ public class BossMovements : MonoBehaviour
     float BossRcsThrust = 200f;
     bool LeftRotationDone = false;
     bool RightRotationDone = false;
+    float angle;
+    [SerializeField] ParticleSystem BossDeadPart;
     enum BossStates { LeftRotation, RightRotation, Thrusting}
     BossStates currentState = BossStates.LeftRotation;
+    [SerializeField] AudioClip Death;
+    AudioSource audio;
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        audio = GetComponent<AudioSource>();
     }
 
     private void Update()
     {
+        angle = gameObject.transform.eulerAngles.z;
+        angle = (angle > 180) ? angle - 360 : angle;
         if (BossIsAlive)
         {
             BossMovement();
         }
+
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!BossIsAlive) { return; }
+        else
+        {
+            if (collision.gameObject.tag.Equals("Player"))
+            {
+                BossDead();
+                StartCoroutine("DeathTime");
+                Destroy(gameObject);
+            }
+        }
+
+    }
+    private void BossDead()
+    {
+        audio.Stop();
+        audio.PlayOneShot(Death);
+        BossDeadPart.Play();
+    }
     private void BossMovement()
     {
         BossRotation();
@@ -56,23 +85,31 @@ public class BossMovements : MonoBehaviour
 
     void Thrusting()
     {
-        JetSpeed = 2000f;
+        boost++;
+        float currentboost = boost;
+        JetSpeed = 2200f;
         rb.AddRelativeForce(Vector3.up * (JetSpeed * Time.deltaTime));
-        StartCoroutine(Thrustingtime());
-        if (LeftRotationDone)
+        if ( currentboost >= 10)
         {
-            currentState = BossStates.RightRotation;
-            LeftRotationDone = false;
+            if (LeftRotationDone)
+            {
+                currentState = BossStates.RightRotation;
+                LeftRotationDone = false;
+                boost = 0;
+            }
+            else if (RightRotationDone)
+            {
+                currentState = BossStates.LeftRotation;
+                RightRotationDone = false;
+                boost = 0;
+            }
+            else { }
         }
-        else
-        {
-            currentState = BossStates.LeftRotation;
-            RightRotationDone = false;
-        }
+        else { }
     }
     private void moveLeft()
     {
-        if (gameObject.transform.eulerAngles.z >= 20)
+        if (angle >= 30)
         {
             rb.freezeRotation = true;
             currentState = BossStates.Thrusting;
@@ -89,8 +126,7 @@ public class BossMovements : MonoBehaviour
 
     void moveRight()
     {
-        bool a = false;
-        if (a == true)
+        if (angle <= -30)
         {
             rb.freezeRotation = true;
             currentState = BossStates.Thrusting;
@@ -104,9 +140,8 @@ public class BossMovements : MonoBehaviour
         }
     }
 
-    IEnumerator Thrustingtime()
+    IEnumerator DeathTime()
     {
-       yield return new WaitForSeconds(5);
-        rb.freezeRotation = true;
+       yield return new WaitForSeconds(3);
     }
 }
