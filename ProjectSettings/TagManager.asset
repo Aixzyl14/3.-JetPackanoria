@@ -9,6 +9,7 @@ TagManager:
   - CheatPoint
   - Safe
   - Boss
+  - Remotes
   layers:
   - Default
   - TransparentFX

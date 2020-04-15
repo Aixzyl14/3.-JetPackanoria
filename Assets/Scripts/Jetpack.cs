@@ -92,7 +92,7 @@ public class Jetpack : MonoBehaviour
     private void RespondToRotationInpout()
     {
         int currentScene = SceneManager.GetActiveScene().buildIndex;
-        rb.freezeRotation = true; // take manual control of rotation
+        rb.angularVelocity = Vector3.zero; // remove rotation due to physics;
         float rotationSpeed = Time.deltaTime * RcsThrust; // rotation per frame
         if (currentScene >= 6)
         {
@@ -125,7 +125,6 @@ public class Jetpack : MonoBehaviour
                 transform.Rotate(-Vector3.forward * rotationSpeed);
             }
         }
-        rb.freezeRotation = false; // resume physics control of rotation
     }
 
     private void OnCollisionEnter(Collision collision)
